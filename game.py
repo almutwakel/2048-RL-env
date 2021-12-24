@@ -205,6 +205,8 @@ class Game:
             for column in range(4):
                 self.grid[row].append(0)  # Append a cell
 
+        self.action = 0
+
     # Set the HEIGHT and WIDTH of the screen
         self.WINDOW_SIZE = [4*self.WIDTH + 5*self.MARGIN, 5*self.HEIGHT + 6*self.MARGIN]
         self.screen = pygame.display.set_mode(self.WINDOW_SIZE)
@@ -329,4 +331,3 @@ class Game:
         pygame.quit()
 
 
-play = Game()
