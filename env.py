@@ -1,6 +1,7 @@
 import gym
 from gym import spaces
 import random
+import numpy as np
 
 
 class Game:
@@ -265,11 +266,11 @@ class Game:
         self.action = 0
 
 
-class CustomEnv(gym.Env):
+class Env2048(gym.Env):
     metadata = {'render.modes': ['human']}
 
     def __init__(self):
-        super(CustomEnv, self).__init__()
+        super(Env2048, self).__init__()
         # Define action and observation space
         # 1 = up 2 = down 3 = left 4 = right
         self.action_space = spaces.Discrete(4)
@@ -284,6 +285,7 @@ class CustomEnv(gym.Env):
         # Execute one time step within the environment
         self.play.action = action
         self.play.act()
+        self.state = sum(self.play.grid, [])
         if self.play.done:
             done = True
             reward = 0
@@ -291,14 +293,15 @@ class CustomEnv(gym.Env):
             done = False
             # temporary
             reward = 1
-        self.render()
-        return np.array(self.state, dtype=int), reward, done, {}
+        # self.render()
+        return np.array(self.state), reward, done, {}
 
     def reset(self):
         # Reset the state of the environment to an initial state
-        super().reset()
+        # super().reset()
         self.play.start()
-        return self.state
+        self.state = sum(self.play.grid, [])
+        return np.array(self.state)
 
     def render(self, mode='human', close=False):
         # Render the environment to the screen
@@ -309,7 +312,7 @@ class CustomEnv(gym.Env):
         pass
 
 
-env = CustomEnv()
-env.step(1)
-env.step(1)
-env.step(2)
+# env = Env2048()
+# env.step(1)
+# env.step(1)
+# env.step(2)
