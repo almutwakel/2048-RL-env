@@ -276,6 +276,7 @@ class CustomEnv(gym.Env):
         # 4x4 grid
         self.observation_space = spaces.Box(low=0, high=11, shape=(4, 4), dtype=int)
         self.play = Game()
+        self.state = None
         self.reset()
         self.render()
 
@@ -284,19 +285,28 @@ class CustomEnv(gym.Env):
         self.play.action = action
         self.play.act()
         if self.play.done:
-            self.reset()
+            done = True
+            reward = 0
+        else:
+            done = False
+            # temporary
+            reward = 1
         self.render()
-        pass
+        return np.array(self.state, dtype=int), reward, done, {}
 
     def reset(self):
         # Reset the state of the environment to an initial state
+        super().reset()
         self.play.start()
-        pass
+        return self.state
 
     def render(self, mode='human', close=False):
         # Render the environment to the screen
         from gym.envs.classic_control import rendering
         print(self.play.grid)
+
+    def close(self):
+        pass
 
 
 env = CustomEnv()
