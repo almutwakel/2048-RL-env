@@ -275,14 +275,15 @@ class Env2048(gym.Env):
         # 1 = up 2 = down 3 = left 4 = right
         self.action_space = spaces.Discrete(4)
         # 4x4 grid
-        self.observation_space = spaces.Box(low=0, high=11, shape=(4, 4), dtype=int)
+        self.observation_space = spaces.Box(low=0, high=11, shape=(16,), dtype=int)
         self.play = Game()
         self.state = None
         self.reset()
-        self.render()
+        # self.render()
 
     def step(self, action):
         # Execute one time step within the environment
+        prev_score = self.play.score
         self.play.action = action
         self.play.act()
         self.state = sum(self.play.grid, [])
@@ -291,8 +292,7 @@ class Env2048(gym.Env):
             reward = 0
         else:
             done = False
-            # temporary
-            reward = 1
+            reward = self.play.score - prev_score
         # self.render()
         return np.array(self.state), reward, done, {}
 

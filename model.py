@@ -19,11 +19,11 @@ env = e.Env2048()
 2. Create a neural network
 """
 model = keras.Sequential()
-model.add(layers.Dense(24, input_dim=16, activation='relu'))
-model.add(layers.Dense(24, activation='relu'))
-model.add(layers.Dense(2, activation='relu'))
+model.add(layers.Dense(16, input_dim=16, activation='relu'))
+model.add(layers.Dense(16, activation='relu'))
+model.add(layers.Dense(4, activation='relu'))
 model.compile(loss='mse', optimizer=keras.optimizers.Adam(learning_rate=0.001))
-model.summary()
+# model.summary()
 """
 3. Create a memory
 """
@@ -62,6 +62,7 @@ def replay_memory(batch_size):
 """
 7. Create a function to play one round
 """
+
 def play_one_round(render=True):
     state = env.reset()
     done = False
@@ -72,9 +73,10 @@ def play_one_round(render=True):
             # action = np.argmax(model.predict(state))
             action = take_random_action()
         next_state, reward, done, _ = env.step(action)
+        print(next_state, reward, done, _)
         if render:
             env.render()
-        # remember_experience(state, action, reward, next_state, done)
+        remember_experience(state, action, reward, next_state, done)
         state = next_state
 
 """
@@ -119,4 +121,10 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 11. Train and test the model
 """
 # train_and_test_model()
+# test_model()
+# for i in range(10):
+#     play_one_round()
+# replay_memory(10)
+# play_one_round()
+# model.summary()
 play_one_round()
