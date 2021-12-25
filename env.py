@@ -294,14 +294,14 @@ class Env2048(gym.Env):
             done = False
             reward = self.play.score - prev_score
         # self.render()
-        return np.array(self.state), reward, done, {}
+        return self.state, reward, done, {}
 
     def reset(self):
         # Reset the state of the environment to an initial state
         # super().reset()
         self.play.start()
         self.state = sum(self.play.grid, [])
-        return np.array(self.state)
+        return self.state
 
     def render(self, mode='human', close=False):
         # Render the environment to the screen

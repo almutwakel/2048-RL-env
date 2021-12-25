@@ -33,7 +33,7 @@ memory = deque(maxlen=2000)
 4. Create a function to take random action
 """
 def take_random_action():
-    return env.action_space.sample() + 1
+    return env.action_space.sample()
 
 """
 5. Create a function to remember an experience
@@ -52,12 +52,16 @@ def replay_memory(batch_size):
     for sample in samples:
         state, action, reward, next_state, done = sample
         target = reward
+        # print("next state:", next_state)
+        # next_state = np.reshape(next_state, (16, ))
+        # print(next_state.ndim)
         if not done:
-            target = reward + gamma * np.amax(model.predict(next_state)[0])
+            target = reward + gamma * np.amax(model.predict([next_state], batch_size=1)[0])
         target_f = model.predict(state)
         target_f[0][action] = target
-        print(state)
-        model.fit(state, target_f, epochs=1, verbose=0)
+        print("targetf:", target_f)
+        print("state:", state)
+        model.fit(np.array(state), np.array(target_f), epochs=1, verbose=0)
 
 """
 7. Create a function to play one round
@@ -72,11 +76,11 @@ def play_one_round(render=True):
         else:
             # action = np.argmax(model.predict(state))
             action = take_random_action()
-        next_state, reward, done, _ = env.step(action)
+        next_state, reward, done, _ = env.step(action + 1)
         print(next_state, reward, done, _)
         if render:
             env.render()
-        remember_experience(state, action, reward, next_state, done)
+        remember_experience([state], action, reward, next_state, done)
         state = next_state
 
 """
@@ -120,11 +124,10 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 """
 11. Train and test the model
 """
-# train_and_test_model()
+model.summary()
+train_and_test_model()
 # test_model()
-# for i in range(10):
-#     play_one_round()
+
 # replay_memory(10)
 # play_one_round()
-# model.summary()
-play_one_round()
+# play_one_round()
