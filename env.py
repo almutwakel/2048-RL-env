@@ -2,6 +2,9 @@ import gym
 from gym import spaces
 import random
 import numpy as np
+import display
+from gym.envs.classic_control import rendering
+import time
 
 
 class Game:
@@ -11,7 +14,17 @@ class Game:
         self.WHITE = (255, 255, 255)
         self.GREEN = (0, 255, 0)
         self.RED = (255, 0, 0)
-
+        self.colorlist = [(238, 228, 218),
+                          (238, 228, 218),
+                          (242, 177, 121),
+                          (245, 149, 99),
+                          (246, 124, 95),
+                          (246, 94, 59),
+                          (237, 207, 114),
+                          (237, 204, 97),
+                          (237, 200, 80),
+                          (237, 197, 63),
+                          (237, 194, 46)]
         # self.font = pygame.font.Font('freesansbold.ttf', 32)
 
         self.texts = []
@@ -40,9 +53,6 @@ class Game:
         # Set the HEIGHT and WIDTH of the screen
         self.WINDOW_SIZE = [4*self.WIDTH + 5*self.MARGIN, 5*self.HEIGHT + 6*self.MARGIN]
 
-        # Set title of screen
-
-        # Loop until the user clicks the close button.
         self.done = False
 
         # Used to manage how fast the screen updates
@@ -279,6 +289,9 @@ class Env2048(gym.Env):
         self.play = Game()
         self.state = None
         self.reset()
+        screen_width = 400
+        screen_height = 500
+        self.viewer = rendering.Viewer(screen_width, screen_height)
         # self.render()
 
     def step(self, action):
@@ -293,7 +306,6 @@ class Env2048(gym.Env):
         else:
             done = False
             reward = self.play.score - prev_score
-        # self.render()
         return self.state, reward, done, {}
 
     def reset(self):
@@ -304,15 +316,35 @@ class Env2048(gym.Env):
         return self.state
 
     def render(self, mode='human', close=False):
-        # Render the environment to the screen
-        from gym.envs.classic_control import rendering
-        print(self.play.grid)
+
+        background = rendering.FilledPolygon([(0, 0), (0, 500), (400, 500), (400, 0)])
+        self.viewer.add_geom(background)
+
+        # 238, 228, 218
+        for row in range(4):
+            for col in range(4):
+                if self.state[row * 4 + col] > 0:
+                    tile = rendering.FilledPolygon([(10 + 100 * col, 10 + 100 * row), (10 + 100 * col, 90 + 100 * row),
+                                                    (90 + 100 * col, 90 + 100 * row), (90 + 100 * col, 10 + 100 * row)])
+                    tile.set_color(self.play.colorlist[self.state[row * 4 + col]][0]/255, self.play.colorlist[self.state[row * 4 + col]][1]/255,
+                                   self.play.colorlist[self.state[row * 4 + col]][2]/255)
+                    tile_transform = rendering.Transform()
+                    tile.add_attr(tile_transform)
+                    self.viewer.add_geom(tile)
+
+        if self.state is None:
+            return None
+
+        return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
         pass
 
 
-# env = Env2048()
-# env.step(1)
-# env.step(1)
-# env.step(2)
+env = Env2048()
+for i in range(100):
+    env.render()
+    env.step(random.randint(1, 4))
+    time.sleep(0.1)
+
+
