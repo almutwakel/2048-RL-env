@@ -5,6 +5,7 @@ import numpy as np
 import display
 from gym.envs.classic_control import rendering
 import time
+import pyglet
 
 
 class Game:
@@ -276,6 +277,14 @@ class Game:
         self.action = 0
 
 
+class DrawText:
+    def __init__(self, label:pyglet.text.Label):
+        self.label=label
+
+    def render(self):
+        self.label.draw()
+
+
 class Env2048(gym.Env):
     metadata = {'render.modes': ['human']}
 
@@ -319,6 +328,11 @@ class Env2048(gym.Env):
 
         background = rendering.FilledPolygon([(0, 0), (0, 500), (400, 500), (400, 0)])
         self.viewer.add_geom(background)
+        label = pyglet.text.Label(str(self.play.score), font_size=36,
+                                  x=200, y=450, anchor_x='left', anchor_y='bottom',
+                                  color=(255, 123, 255, 255))
+
+        label.draw()
 
         # 238, 228, 218
         for row in range(4):
@@ -331,20 +345,25 @@ class Env2048(gym.Env):
                     tile_transform = rendering.Transform()
                     tile.add_attr(tile_transform)
                     self.viewer.add_geom(tile)
+                    label = pyglet.text.Label(str(2 ** self.state[row * 4 + col]), font_size=18,
+                                              x=50 + 100 * col, y=50 + 100 * row, anchor_y='center', anchor_x='center',
+                                              color=(0, 0, 0, 255))
+                    label.draw()
+                    self.viewer.add_geom(DrawText(label))
 
         if self.state is None:
             return None
 
+        # Text
+        label = pyglet.text.Label(str(self.play.score), font_size=18,
+                                  x=200, y=450, anchor_y='center', anchor_x='center',
+                                  color=(255, 255, 255, 255))
+        label.draw()
+        self.viewer.add_geom(DrawText(label))
+        time.sleep(0.01)
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
         pass
-
-
-env = Env2048()
-for i in range(100):
-    env.render()
-    env.step(random.randint(1, 4))
-    time.sleep(0.1)
 
 

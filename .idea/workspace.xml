@@ -33,7 +33,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
-  <component name="RunManager" selected="Python.env">
+  <component name="RunManager" selected="Python.2048model">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="OpenAI" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -162,7 +162,7 @@
       <workItem from="1639067826762" duration="53000" />
       <workItem from="1639068482401" duration="22291000" />
       <workItem from="1639526514924" duration="3654000" />
-      <workItem from="1639530527267" duration="33310000" />
+      <workItem from="1639530527267" duration="34951000" />
     </task>
     <servers />
   </component>
@@ -185,7 +185,7 @@
     <SUITE FILE_PATH="coverage/OpenAI$pygame.coverage" NAME="pygame Coverage Results" MODIFIED="1639526835594" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/OpenAI$2048model.coverage" NAME="2048model Coverage Results" MODIFIED="1639530365451" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2048_RL_env$pygame.coverage" NAME="pygame Coverage Results" MODIFIED="1640391105852" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2048_RL_env$env.coverage" NAME="env Coverage Results" MODIFIED="1640473355317" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2048_RL_env$env.coverage" NAME="env Coverage Results" MODIFIED="1640475605930" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2048_RL_env$display.coverage" NAME="display Coverage Results" MODIFIED="1640469289466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/OpenAI$2048env.coverage" NAME="2048env Coverage Results" MODIFIED="1639528539829" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2048_RL_env$2048model.coverage" NAME="model Coverage Results" MODIFIED="1640467292667" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
