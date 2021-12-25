@@ -74,8 +74,7 @@ def play_one_round(render=True):
         if np.random.rand() < epsilon:
             action = take_random_action()
         else:
-            # action = np.argmax(model.predict(state))
-            action = take_random_action()
+            action = np.argmax(model.predict([state]))
         next_state, reward, done, _ = env.step(action + 1)
         print(next_state, reward, done, _)
         if render:
@@ -88,7 +87,7 @@ def play_one_round(render=True):
 """
 
 
-def play_many_rounds(num_rounds=10000, batch_size=32, gamma=gamma, epsilon=epsilon):
+def play_many_rounds(num_rounds=100, batch_size=32, gamma=gamma, epsilon=epsilon):
     for i in range(num_rounds):
         play_one_round()
         replay_memory(batch_size)
@@ -106,7 +105,7 @@ def test_model(num_rounds=100, render=False):
         state = env.reset()
         done = False
         while not done:
-            action = np.argmax(model.predict(state))
+            action = np.argmax(model.predict([state]))
             next_state, reward, done, _ = env.step(action)
             total_reward += reward
             if render:
@@ -125,7 +124,7 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 11. Train and test the model
 """
 model.summary()
-train_and_test_model()
+play_many_rounds(10)
 # test_model()
 
 # replay_memory(10)

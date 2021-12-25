@@ -321,6 +321,8 @@ class Env2048(gym.Env):
         # Reset the state of the environment to an initial state
         # super().reset()
         self.play.start()
+        self.play.done = False
+        self.play.score = 0
         self.state = sum(self.play.grid, [])
         return self.state
 
