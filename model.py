@@ -34,7 +34,7 @@ memory = deque(maxlen=2000)
 4. Create a function to take random action
 """
 def take_random_action():
-    return env.action_space.sample()
+    return [[random.randrange(0, 1), random.randrange(0, 1), random.randrange(0, 1), random.randrange(0, 1)]]
 
 """
 5. Create a function to remember an experience
@@ -74,16 +74,23 @@ def play_one_round(render=True):
     while not done:
         timestamp1 = datetime.datetime.now()
         if np.random.rand() < epsilon:
-            action = take_random_action()
+            actions = take_random_action()
         else:
-            # action = take_random_action()
-            action = np.argmax(model.predict([state]))
-        timestamp2 = datetime.datetime.now()
-        next_state, reward, done, _ = env.step(action)
-        timestamp3 = datetime.datetime.now()
+            actions = model.predict([state])
+        changed = False
+        while not changed:
+            action = np.argmax(actions)
+            timestamp2 = datetime.datetime.now()
+            next_state, reward, done, flags = env.step(action)
+            timestamp3 = datetime.datetime.now()
+            changed = flags["changed"]
+            actions[0][action] = -1
+            if render:
+                env.render()
+            state = next_state
+            if done:
+                break
         # print(next_state, reward, done, _)
-        if render:
-            env.render()
         timestamp4 = datetime.datetime.now()
         remember_experience([state], action, reward, next_state, done)
         state = next_state
@@ -128,15 +135,12 @@ def test_model(num_rounds=100, render=False):
             changed = False
             while not changed:
                 action = np.argmax(actions)
-                print("action picked:", action, "from", actions)
                 next_state, reward, done, flags = env.step(action)
                 changed = flags["changed"]
                 actions[0][action] = -1
-                print("stepped:", reward, "changed", changed)
                 total_reward += reward
                 if render:
                     env.render()
-                    print("rendered")
                 state = next_state
                 if done:
                     break
@@ -157,7 +161,6 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 model.summary()
 # train_and_test_model()
 test_model(num_rounds=10, render=False)
-# train_and_test_model(train_rounds=100, test_rounds=5)
+train_and_test_model(train_rounds=10, test_rounds=10)
 # replay_memory(10)
-# play_one_round()
 # play_one_round()
