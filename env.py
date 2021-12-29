@@ -78,13 +78,25 @@ class Game:
         Checks if the game is over
         """
         over = True
-        for row in self.grid:
-            for col in row:
-                if col == 0:
+        for row in range(4):
+            for col in range(4):
+                if self.grid[row][col] == 0:
                     over = False
-                if col == 11:
-                    over = True
-                    break
+                try:
+                    if self.grid[row][col] == self.grid[row + 1][col]:
+                        over = False
+                except IndexError:
+                    pass
+                try:
+                    if self.grid[row][col] == self.grid[row][col + 1]:
+                        over = False
+                except IndexError:
+                    pass
+                if self.grid[row][col] == 11:
+                    self.done = True
+                    print("2048! Game over")
+                    print("Final score:", self.score)
+                    return
 
         if over:
             self.done = True
