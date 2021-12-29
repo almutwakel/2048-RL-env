@@ -9,7 +9,7 @@ import env as e
 import datetime
 
 gamma = 0.9
-epsilon = 0.3
+epsilon = 0.2
 
 """
 1. Create a gym environment
@@ -76,10 +76,10 @@ def play_one_round(render=True):
         if np.random.rand() < epsilon:
             action = take_random_action()
         else:
-            action = take_random_action()
-            # action = np.argmax(model.predict([state]))
+            # action = take_random_action()
+            action = np.argmax(model.predict([state]))
         timestamp2 = datetime.datetime.now()
-        next_state, reward, done, _ = env.step(action + 1)
+        next_state, reward, done, _ = env.step(action)
         timestamp3 = datetime.datetime.now()
         # print(next_state, reward, done, _)
         if render:
@@ -118,18 +118,31 @@ def play_many_rounds(num_rounds=100, batch_size=32, gamma=gamma, epsilon=epsilon
 9. Create a function to test the model
 """
 def test_model(num_rounds=100, render=False):
+    timestamp1 = datetime.datetime.now()
     total_reward = 0
     for i in range(num_rounds):
         state = env.reset()
         done = False
         while not done:
-            action = np.argmax(model.predict([state]))
-            next_state, reward, done, _ = env.step(action)
-            total_reward += reward
-            if render:
-                env.render()
-            state = next_state
+            actions = model.predict([state])
+            changed = False
+            while not changed:
+                action = np.argmax(actions)
+                print("action picked:", action, "from", actions)
+                next_state, reward, done, flags = env.step(action)
+                changed = flags["changed"]
+                actions[0][action] = -1
+                print("stepped:", reward, "changed", changed)
+                total_reward += reward
+                if render:
+                    env.render()
+                    print("rendered")
+                state = next_state
+                if done:
+                    break
+    timestamp2 = datetime.datetime.now()
     print('Average reward per round = {}'.format(total_reward / num_rounds))
+    print("Testing time: ", timestamp2-timestamp1)
 
 """
 10. Create a function to train and test the model
@@ -142,9 +155,9 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 11. Train and test the model
 """
 model.summary()
-play_many_rounds(10)
-# test_model()
-
+# train_and_test_model()
+test_model(num_rounds=10, render=False)
+# train_and_test_model(train_rounds=100, test_rounds=5)
 # replay_memory(10)
 # play_one_round()
 # play_one_round()

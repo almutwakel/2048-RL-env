@@ -262,31 +262,32 @@ class Game:
             new_grid = transpose(new_grid)
             return new_grid, changed
 
-        if self.action == 1:
+        if self.action == 0:
             new_grid, changed = move_up(self.grid)
             self.grid = new_grid
             self.check_game_over()
             if changed:
                 self.add_new_tile()
-        elif self.action == 2:
+        elif self.action == 1:
             new_grid, changed = move_down(self.grid)
             self.grid = new_grid
             self.check_game_over()
             if changed:
                 self.add_new_tile()
-        elif self.action == 3:
+        elif self.action == 2:
             new_grid, changed = move_left(self.grid)
             self.grid = new_grid
             self.check_game_over()
             if changed:
                 self.add_new_tile()
-        elif self.action == 4:
+        elif self.action == 3:
             new_grid, changed = move_right(self.grid)
             self.grid = new_grid
             self.check_game_over()
             if changed:
                 self.add_new_tile()
         self.action = 0
+        return changed
 
 
 class DrawText:
@@ -303,7 +304,7 @@ class Env2048(gym.Env):
     def __init__(self):
         super(Env2048, self).__init__()
         # Define action and observation space
-        # 1 = up 2 = down 3 = left 4 = right
+        # 0 = up 1 = down 2 = left 3 = right
         self.action_space = spaces.Discrete(4)
         # 4x4 grid
         self.observation_space = spaces.Box(low=0, high=11, shape=(16,), dtype=int)
@@ -319,7 +320,7 @@ class Env2048(gym.Env):
         # Execute one time step within the environment
         prev_score = self.play.score
         self.play.action = action
-        self.play.act()
+        changed = self.play.act()
         self.state = sum(self.play.grid, [])
         if self.play.done:
             done = True
@@ -327,7 +328,7 @@ class Env2048(gym.Env):
         else:
             done = False
             reward = self.play.score - prev_score
-        return self.state, reward, done, {}
+        return self.state, reward, done, {"changed": changed}
 
     def reset(self):
         # Reset the state of the environment to an initial state
