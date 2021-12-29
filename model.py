@@ -6,6 +6,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import env as e
+import datetime
 
 gamma = 0.9
 epsilon = 0.3
@@ -59,8 +60,8 @@ def replay_memory(batch_size):
             target = reward + gamma * np.amax(model.predict([next_state], batch_size=1)[0])
         target_f = model.predict(state)
         target_f[0][action] = target
-        print("targetf:", target_f)
-        print("state:", state)
+        # print("targetf:", target_f)
+        # print("state:", state)
         model.fit(np.array(state), np.array(target_f), epochs=1, verbose=0)
 
 """
@@ -71,16 +72,28 @@ def play_one_round(render=True):
     state = env.reset()
     done = False
     while not done:
+        timestamp1 = datetime.datetime.now()
         if np.random.rand() < epsilon:
             action = take_random_action()
         else:
-            action = np.argmax(model.predict([state]))
+            action = take_random_action()
+            # action = np.argmax(model.predict([state]))
+        timestamp2 = datetime.datetime.now()
         next_state, reward, done, _ = env.step(action + 1)
-        print(next_state, reward, done, _)
+        timestamp3 = datetime.datetime.now()
+        # print(next_state, reward, done, _)
         if render:
             env.render()
+        timestamp4 = datetime.datetime.now()
         remember_experience([state], action, reward, next_state, done)
         state = next_state
+        timestamp5 = datetime.datetime.now()
+        print("Action time:", timestamp2 - timestamp1)
+        print("Step time:", timestamp3 - timestamp2)
+        print("Render time:", timestamp4 - timestamp3)
+        print("Remember time:", timestamp5 - timestamp4)
+
+
 
 """
 8. Create a function to play many rounds
@@ -89,8 +102,13 @@ def play_one_round(render=True):
 
 def play_many_rounds(num_rounds=100, batch_size=32, gamma=gamma, epsilon=epsilon):
     for i in range(num_rounds):
+        timestamp1 = datetime.datetime.now()
         play_one_round()
+        timestamp2 = datetime.datetime.now()
         replay_memory(batch_size)
+        timestamp3 = datetime.datetime.now()
+        print("> Total round play time:", timestamp2 - timestamp1)
+        print("> Round model time:", timestamp3 - timestamp2)
         if epsilon > 0.01:
             epsilon *= 0.999
         if (i+1) % 100 == 0:

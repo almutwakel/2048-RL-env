@@ -297,10 +297,10 @@ class Env2048(gym.Env):
         self.observation_space = spaces.Box(low=0, high=11, shape=(16,), dtype=int)
         self.play = Game()
         self.state = None
-        self.reset()
         screen_width = 400
         screen_height = 500
         self.viewer = rendering.Viewer(screen_width, screen_height)
+        self.reset()
         # self.render()
 
     def step(self, action):
@@ -327,7 +327,7 @@ class Env2048(gym.Env):
         return self.state
 
     def render(self, mode='human', close=False):
-
+        self.viewer.geoms = []
         background = rendering.FilledPolygon([(0, 0), (0, 500), (400, 500), (400, 0)])
         self.viewer.add_geom(background)
         label = pyglet.text.Label(str(self.play.score), font_size=36,
@@ -362,7 +362,7 @@ class Env2048(gym.Env):
                                   color=(255, 255, 255, 255))
         label.draw()
         self.viewer.add_geom(DrawText(label))
-        time.sleep(0.01)
+        # time.sleep(0.01)
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
