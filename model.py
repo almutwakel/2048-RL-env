@@ -7,6 +7,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 import env as e
 import datetime
+import os
 
 gamma = 0.9
 epsilon = 0.2
@@ -19,6 +20,13 @@ env = e.Env2048()
 """
 2. Create a neural network
 """
+checkpoint_path = "training_1/cp.ckpt"
+checkpoint_dir = os.path.dirname(checkpoint_path)
+
+# Create a callback that saves the model's weights
+cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                 save_weights_only=True,
+                                                 verbose=1)
 model = keras.Sequential()
 model.add(layers.Dense(16, input_dim=16, activation='relu'))
 model.add(layers.Dense(16, activation='relu'))
@@ -68,7 +76,7 @@ def replay_memory(batch_size):
 7. Create a function to play one round
 """
 
-def play_one_round(render=True):
+def play_one_round(render=True, verbose=False):
     state = env.reset()
     done = False
     while not done:
@@ -92,13 +100,15 @@ def play_one_round(render=True):
                 break
         # print(next_state, reward, done, _)
         timestamp4 = datetime.datetime.now()
+        print(action)
         remember_experience([state], action, reward, next_state, done)
         state = next_state
         timestamp5 = datetime.datetime.now()
-        print("Action time:", timestamp2 - timestamp1)
-        print("Step time:", timestamp3 - timestamp2)
-        print("Render time:", timestamp4 - timestamp3)
-        print("Remember time:", timestamp5 - timestamp4)
+        if verbose:
+            print("Action time:", timestamp2 - timestamp1)
+            print("Step time:", timestamp3 - timestamp2)
+            print("Render time:", timestamp4 - timestamp3)
+            print("Remember time:", timestamp5 - timestamp4)
 
 
 
@@ -107,15 +117,16 @@ def play_one_round(render=True):
 """
 
 
-def play_many_rounds(num_rounds=100, batch_size=32, gamma=gamma, epsilon=epsilon):
+def play_many_rounds(num_rounds=100, batch_size=32, gamma=gamma, epsilon=epsilon, render=True, verbose=False):
     for i in range(num_rounds):
         timestamp1 = datetime.datetime.now()
-        play_one_round()
+        play_one_round(render=render, verbose=verbose)
         timestamp2 = datetime.datetime.now()
         replay_memory(batch_size)
         timestamp3 = datetime.datetime.now()
-        print("> Total round play time:", timestamp2 - timestamp1)
-        print("> Round model time:", timestamp3 - timestamp2)
+        if verbose:
+            print("> Total round play time:", timestamp2 - timestamp1)
+            print("> Round model time:", timestamp3 - timestamp2)
         if epsilon > 0.01:
             epsilon *= 0.999
         if (i+1) % 100 == 0:
@@ -136,7 +147,10 @@ def test_model(num_rounds=100, render=False):
             while not changed:
                 action = np.argmax(actions)
                 next_state, reward, done, flags = env.step(action)
+                # print(action, actions)
                 changed = flags["changed"]
+                if changed:
+                    print(action, actions)
                 actions[0][action] = -1
                 total_reward += reward
                 if render:
@@ -151,8 +165,8 @@ def test_model(num_rounds=100, render=False):
 """
 10. Create a function to train and test the model
 """
-def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, gamma=0.9):
-    play_many_rounds(train_rounds, batch_size, gamma)
+def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, gamma=0.9, render=False):
+    play_many_rounds(train_rounds, batch_size, gamma, epsilon, render=render)
     test_model(test_rounds)
 
 """
@@ -160,7 +174,7 @@ def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, ga
 """
 model.summary()
 # train_and_test_model()
-test_model(num_rounds=10, render=False)
-train_and_test_model(train_rounds=10, test_rounds=10)
+# test_model(num_rounds=10, render=False)
+train_and_test_model(train_rounds=10, test_rounds=10, render=False)
 # replay_memory(10)
 # play_one_round()
