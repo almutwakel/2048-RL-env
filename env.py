@@ -301,13 +301,17 @@ class DrawText:
 class Env2048(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self):
+    def __init__(self, conv=False):
         super(Env2048, self).__init__()
         # Define action and observation space
         # 0 = up 1 = down 2 = left 3 = right
         self.action_space = spaces.Discrete(4)
         # 4x4 grid
-        self.observation_space = spaces.Box(low=0, high=11, shape=(16,), dtype=int)
+        self.conv = conv
+        if self.conv:
+            self.observation_space = spaces.Box(low=0, high=11, shape=(4, 4, 1), dtype=int)
+        else:
+            self.observation_space = spaces.Box(low=0, high=11, shape=(16,), dtype=int)
         self.play = Game()
         self.state = None
         screen_width = 400
@@ -321,10 +325,15 @@ class Env2048(gym.Env):
         prev_score = self.play.score
         self.play.action = action
         changed = self.play.act()
-        self.state = sum(self.play.grid, [])
+        if self.conv:
+            self.state = self.play.grid
+        else:
+            self.state = sum(self.play.grid, [])
         if self.play.done:
             done = True
             reward = 0
+        elif not changed:
+            reward = -1
         else:
             done = False
             reward = self.play.score - prev_score
@@ -336,7 +345,10 @@ class Env2048(gym.Env):
         self.play.start()
         self.play.done = False
         self.play.score = 0
-        self.state = sum(self.play.grid, [])
+        if self.conv:
+            self.state = self.play.grid
+        else:
+            self.state = sum(self.play.grid, [])
         return self.state
 
     def render(self, mode='human', close=False):
