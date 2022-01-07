@@ -329,15 +329,11 @@ class Env2048(gym.Env):
             self.state = self.play.grid
         else:
             self.state = sum(self.play.grid, [])
-        if self.play.done:
-            done = True
-            reward = 0
-        elif not changed:
+        if self.play.done or not changed:
             reward = -1
         else:
-            done = False
             reward = self.play.score - prev_score
-        return self.state, reward, done, {"changed": changed}
+        return self.state, reward, self.play.done, {"changed": changed}
 
     def reset(self):
         # Reset the state of the environment to an initial state
@@ -364,15 +360,20 @@ class Env2048(gym.Env):
         # 238, 228, 218
         for row in range(4):
             for col in range(4):
-                if self.state[row * 4 + col] > 0:
+                if self.conv:
+                    tileval = self.state[row][col]
+                else:
+                    tileval = self.state[row * 4 + col]
+
+                if tileval > 0:
                     tile = rendering.FilledPolygon([(10 + 100 * col, 10 + 100 * row), (10 + 100 * col, 90 + 100 * row),
                                                     (90 + 100 * col, 90 + 100 * row), (90 + 100 * col, 10 + 100 * row)])
-                    tile.set_color(self.play.colorlist[self.state[row * 4 + col]][0]/255, self.play.colorlist[self.state[row * 4 + col]][1]/255,
-                                   self.play.colorlist[self.state[row * 4 + col]][2]/255)
+                    tile.set_color(self.play.colorlist[tileval][0]/255, self.play.colorlist[tileval][1]/255,
+                                   self.play.colorlist[tileval][2]/255)
                     tile_transform = rendering.Transform()
                     tile.add_attr(tile_transform)
                     self.viewer.add_geom(tile)
-                    label = pyglet.text.Label(str(2 ** self.state[row * 4 + col]), font_size=18,
+                    label = pyglet.text.Label(str(2 ** tileval), font_size=18,
                                               x=50 + 100 * col, y=50 + 100 * row, anchor_y='center', anchor_x='center',
                                               color=(0, 0, 0, 255))
                     label.draw()
