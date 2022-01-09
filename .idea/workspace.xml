@@ -2,10 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="683c2bb6-c020-4c98-8c39-8d6843e99a41" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/policy.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/keras_rl_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/keras_rl_test.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/policy.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -187,7 +186,7 @@
       <workItem from="1639067826762" duration="53000" />
       <workItem from="1639068482401" duration="22291000" />
       <workItem from="1639526514924" duration="3654000" />
-      <workItem from="1639530527267" duration="69731000" />
+      <workItem from="1639530527267" duration="74306000" />
     </task>
     <servers />
   </component>

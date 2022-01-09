@@ -6,6 +6,7 @@ import display
 from gym.envs.classic_control import rendering
 import time
 import pyglet
+from copy import deepcopy
 
 
 class Game:
@@ -59,7 +60,7 @@ class Game:
         # Used to manage how fast the screen updates
 
         # env stuff
-        self.action = 0
+        self.action = -1
         self.score = 0
 
     def add_new_tile(self):
@@ -72,6 +73,11 @@ class Game:
             row = random.randint(0, 3)
             col = random.randint(0, 3)
         self.grid[row][col] = 1
+
+    def check_valid_move(self, move):
+        copy = deepcopy(self.grid)
+
+
 
     def check_game_over(self):
         """
@@ -113,6 +119,8 @@ class Game:
         self.add_new_tile()
 
     def act(self):
+        if self.action not in (0, 1, 2, 3):
+            return AssertionError
 
         def compress(mat):
             # bool variable to determine
@@ -286,7 +294,7 @@ class Game:
             self.check_game_over()
             if changed:
                 self.add_new_tile()
-        self.action = 0
+        self.action = -1
         return changed
 
 

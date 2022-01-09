@@ -9,6 +9,8 @@ from rl.agents.dqn import DQNAgent
 from rl.policy import BoltzmannQPolicy, SoftmaxPolicy
 from rl.memory import SequentialMemory
 
+from policy import BestValidMovePolicy
+
 import env as e
 
 
@@ -29,7 +31,8 @@ print(model.summary())
 print("#osh", model.output.shape)
 
 memory = SequentialMemory(limit=50000, window_length=1)
-policy = BoltzmannQPolicy(tau=0.2)
+# policy = BoltzmannQPolicy(tau=0.2)
+policy = BestValidMovePolicy(e)
 dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=100,
                target_model_update=1e-2, policy=policy, test_policy=policy)
 dqn.compile(Adam(learning_rate=1e-3), metrics=['mae'])
