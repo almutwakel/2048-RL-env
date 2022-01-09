@@ -6,7 +6,6 @@ import display
 from gym.envs.classic_control import rendering
 import time
 import pyglet
-from copy import deepcopy
 
 
 class Game:
@@ -57,11 +56,158 @@ class Game:
 
         self.done = False
 
-        # Used to manage how fast the screen updates
-
         # env stuff
         self.action = -1
         self.score = 0
+
+    def compress(self, mat):
+        # bool variable to determine
+        # any change happened or not
+        changed = False
+
+        # empty grid
+        new_mat = []
+
+        # with all cells empty
+        for i in range(4):
+            new_mat.append([0] * 4)
+
+        # here we will shift entries
+        # of each cell to it's extreme
+        # left row by row
+        # loop to traverse rows
+        for i in range(4):
+            pos = 0
+
+            # loop to traverse each column
+            # in respective row
+            for j in range(4):
+                if (mat[i][j] != 0):
+                    # if cell is non empty then
+                    # we will shift it's number to
+                    # previous empty cell in that row
+                    # denoted by pos variable
+                    new_mat[i][pos] = mat[i][j]
+
+                    if (j != pos):
+                        changed = True
+                    pos += 1
+
+        # returning new compressed matrix
+        # and the flag variable.
+        return new_mat, changed
+
+    # function to merge the cells
+    # in matrix after compressing
+    def merge(self, mat):
+        changed = False
+        score_delta = 0
+        for i in range(4):
+            for j in range(3):
+
+                # if current cell has same value as
+                # next cell in the row and they
+                # are non empty then
+                if (mat[i][j] == mat[i][j + 1] and mat[i][j] != 0):
+                    # double current cell value and
+                    # empty the next cell
+                    mat[i][j] += 1
+                    score_delta = 2 ** mat[i][j]
+                    mat[i][j + 1] = 0
+
+                    # make bool variable True indicating
+                    # the new grid after merging is
+                    # different.
+                    changed = True
+
+        return mat, changed, score_delta
+
+    # function to reverse the matrix
+    # maens reversing the content of
+    # each row (reversing the sequence)
+    def reverse(self, mat):
+        new_mat = []
+        for i in range(4):
+            new_mat.append([])
+            for j in range(4):
+                new_mat[i].append(mat[i][3 - j])
+        return new_mat
+
+    # function to get the transpose
+    # of matrix means interchanging
+    # rows and column
+    def transpose(self, mat):
+        new_mat = []
+        for i in range(4):
+            new_mat.append([])
+            for j in range(4):
+                new_mat[i].append(mat[j][i])
+        return new_mat
+
+    # function to update the matrix
+    # if we move / swipe left
+    def move_left(self, grid):
+        # first compress the grid
+        new_grid, changed1 = self.compress(grid)
+
+        # then merge the cells.
+        new_grid, changed2, score_delta = self.merge(new_grid)
+
+        changed = changed1 or changed2
+
+        # again compress after merging.
+        new_grid, temp = self.compress(new_grid)
+
+        # return new matrix and bool changed
+        # telling whether the grid is same
+        # or different
+        return new_grid, changed, score_delta
+
+    # function to update the matrix
+    # if we move / swipe right
+    def move_right(self, grid):
+        # to move right we just reverse
+        # the matrix
+        new_grid = self.reverse(grid)
+
+        # then move left
+        new_grid, changed, scoredelta = self.move_left(new_grid)
+
+        # then again reverse matrix will
+        # give us desired result
+        new_grid = self.reverse(new_grid)
+        return new_grid, changed, scoredelta
+
+    # function to update the matrix
+    # if we move / swipe up
+    def move_up(self, grid):
+        # to move up we just take
+        # transpose of matrix
+        new_grid = self.transpose(grid)
+
+        # then move left (calling all
+        # included functions) then
+        new_grid, changed, score_delta = self.move_left(new_grid)
+
+        # again take transpose will give
+        # desired results
+        new_grid = self.transpose(new_grid)
+        return new_grid, changed, score_delta
+
+    # function to update the matrix
+    # if we move / swipe down
+    def move_down(self, grid):
+        # to move down we take transpose
+        new_grid = self.transpose(grid)
+
+        # move right and then again
+        new_grid, changed, score_delta = self.move_right(new_grid)
+
+        # take transpose will give desired
+        # results.
+        new_grid = self.transpose(new_grid)
+        return new_grid, changed, score_delta
+
 
     def add_new_tile(self):
         """
@@ -75,9 +221,18 @@ class Game:
         self.grid[row][col] = 1
 
     def check_valid_move(self, move):
-        copy = deepcopy(self.grid)
-
-
+        copy = np.copy(self.grid)
+        if move == 0:
+            new_grid, changed, _ = self.move_up(copy)
+        elif move == 1:
+            new_grid, changed, _ = self.move_down(copy)
+        elif move == 2:
+            new_grid, changed, _ = self.move_left(copy)
+        elif move == 3:
+            new_grid, changed, _ = self.move_right(copy)
+        else:
+            return Exception
+        return changed
 
     def check_game_over(self):
         """
@@ -88,16 +243,10 @@ class Game:
             for col in range(4):
                 if self.grid[row][col] == 0:
                     over = False
-                try:
-                    if self.grid[row][col] == self.grid[row + 1][col]:
-                        over = False
-                except IndexError:
-                    pass
-                try:
-                    if self.grid[row][col] == self.grid[row][col + 1]:
-                        over = False
-                except IndexError:
-                    pass
+                if over:
+                    for move in range(4):
+                        if self.check_valid_move(move):
+                            over = False
                 if self.grid[row][col] == 11:
                     self.done = True
                     print("2048! Game over")
@@ -119,188 +268,31 @@ class Game:
         self.add_new_tile()
 
     def act(self):
-        if self.action not in (0, 1, 2, 3):
-            return AssertionError
-
-        def compress(mat):
-            # bool variable to determine
-            # any change happened or not
-            changed = False
-
-            # empty grid
-            new_mat = []
-
-            # with all cells empty
-            for i in range(4):
-                new_mat.append([0] * 4)
-
-            # here we will shift entries
-            # of each cell to it's extreme
-            # left row by row
-            # loop to traverse rows
-            for i in range(4):
-                pos = 0
-
-                # loop to traverse each column
-                # in respective row
-                for j in range(4):
-                    if (mat[i][j] != 0):
-                        # if cell is non empty then
-                        # we will shift it's number to
-                        # previous empty cell in that row
-                        # denoted by pos variable
-                        new_mat[i][pos] = mat[i][j]
-
-                        if (j != pos):
-                            changed = True
-                        pos += 1
-
-            # returning new compressed matrix
-            # and the flag variable.
-            return new_mat, changed
-
-        # function to merge the cells
-        # in matrix after compressing
-        def merge(mat):
-            changed = False
-
-            for i in range(4):
-                for j in range(3):
-
-                    # if current cell has same value as
-                    # next cell in the row and they
-                    # are non empty then
-                    if (mat[i][j] == mat[i][j + 1] and mat[i][j] != 0):
-                        # double current cell value and
-                        # empty the next cell
-                        mat[i][j] += 1
-                        self.score += 2 ** mat[i][j]
-                        mat[i][j + 1] = 0
-
-                        # make bool variable True indicating
-                        # the new grid after merging is
-                        # different.
-                        changed = True
-
-            return mat, changed
-
-        # function to reverse the matrix
-        # maens reversing the content of
-        # each row (reversing the sequence)
-        def reverse(mat):
-            new_mat = []
-            for i in range(4):
-                new_mat.append([])
-                for j in range(4):
-                    new_mat[i].append(mat[i][3 - j])
-            return new_mat
-
-        # function to get the transpose
-        # of matrix means interchanging
-        # rows and column
-        def transpose(mat):
-            new_mat = []
-            for i in range(4):
-                new_mat.append([])
-                for j in range(4):
-                    new_mat[i].append(mat[j][i])
-            return new_mat
-
-        # function to update the matrix
-        # if we move / swipe left
-        def move_left(grid):
-            # first compress the grid
-            new_grid, changed1 = compress(grid)
-
-            # then merge the cells.
-            new_grid, changed2 = merge(new_grid)
-
-            changed = changed1 or changed2
-
-            # again compress after merging.
-            new_grid, temp = compress(new_grid)
-
-            # return new matrix and bool changed
-            # telling whether the grid is same
-            # or different
-            return new_grid, changed
-
-        # function to update the matrix
-        # if we move / swipe right
-        def move_right(grid):
-            # to move right we just reverse
-            # the matrix
-            new_grid = reverse(grid)
-
-            # then move left
-            new_grid, changed = move_left(new_grid)
-
-            # then again reverse matrix will
-            # give us desired result
-            new_grid = reverse(new_grid)
-            return new_grid, changed
-
-        # function to update the matrix
-        # if we move / swipe up
-        def move_up(grid):
-            # to move up we just take
-            # transpose of matrix
-            new_grid = transpose(grid)
-
-            # then move left (calling all
-            # included functions) then
-            new_grid, changed = move_left(new_grid)
-
-            # again take transpose will give
-            # desired results
-            new_grid = transpose(new_grid)
-            return new_grid, changed
-
-        # function to update the matrix
-        # if we move / swipe down
-        def move_down(grid):
-            # to move down we take transpose
-            new_grid = transpose(grid)
-
-            # move right and then again
-            new_grid, changed = move_right(new_grid)
-
-            # take transpose will give desired
-            # results.
-            new_grid = transpose(new_grid)
-            return new_grid, changed
-
+        print("acted", self.action)
         if self.action == 0:
-            new_grid, changed = move_up(self.grid)
-            self.grid = new_grid
-            self.check_game_over()
-            if changed:
-                self.add_new_tile()
+            new_grid, changed, score_delta = self.move_up(self.grid)
         elif self.action == 1:
-            new_grid, changed = move_down(self.grid)
-            self.grid = new_grid
-            self.check_game_over()
-            if changed:
-                self.add_new_tile()
+            new_grid, changed, score_delta = self.move_down(self.grid)
         elif self.action == 2:
-            new_grid, changed = move_left(self.grid)
-            self.grid = new_grid
-            self.check_game_over()
-            if changed:
-                self.add_new_tile()
+            new_grid, changed, score_delta = self.move_left(self.grid)
         elif self.action == 3:
-            new_grid, changed = move_right(self.grid)
-            self.grid = new_grid
-            self.check_game_over()
-            if changed:
-                self.add_new_tile()
+            new_grid, changed, score_delta = self.move_right(self.grid)
+        else:
+            print(Exception, "Invalid action")
+            return
+
+        self.grid = new_grid
+        if changed:
+            self.add_new_tile()
+        self.score += score_delta
+        self.check_game_over()
         self.action = -1
-        return changed
+        return score_delta
 
 
 class DrawText:
     def __init__(self, label:pyglet.text.Label):
-        self.label=label
+        self.label = label
 
     def render(self):
         self.label.draw()
@@ -332,16 +324,12 @@ class Env2048(gym.Env):
         # Execute one time step within the environment
         prev_score = self.play.score
         self.play.action = action
-        changed = self.play.act()
+        reward = self.play.act()
         if self.conv:
             self.state = self.play.grid
         else:
             self.state = sum(self.play.grid, [])
-        if self.play.done or not changed:
-            reward = -1
-        else:
-            reward = self.play.score - prev_score
-        return self.state, reward, self.play.done, {"changed": changed}
+        return self.state, reward, self.play.done, {}
 
     def reset(self):
         # Reset the state of the environment to an initial state
@@ -400,6 +388,5 @@ class Env2048(gym.Env):
         return self.viewer.render(return_rgb_array=mode == "rgb_array")
 
     def close(self):
-        pass
-
+        self.viewer.geoms = []
 

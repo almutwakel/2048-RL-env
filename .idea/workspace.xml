@@ -4,6 +4,7 @@
     <list default="true" id="683c2bb6-c020-4c98-8c39-8d6843e99a41" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/env.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/keras_rl_test.py" beforeDir="false" afterPath="$PROJECT_DIR$/keras_rl_test.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/policy.py" beforeDir="false" afterPath="$PROJECT_DIR$/policy.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -186,7 +187,7 @@
       <workItem from="1639067826762" duration="53000" />
       <workItem from="1639068482401" duration="22291000" />
       <workItem from="1639526514924" duration="3654000" />
-      <workItem from="1639530527267" duration="74306000" />
+      <workItem from="1639530527267" duration="79718000" />
     </task>
     <servers />
   </component>
@@ -213,6 +214,6 @@
     <SUITE FILE_PATH="coverage/2048_RL_env$display.coverage" NAME="display Coverage Results" MODIFIED="1640469289466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/OpenAI$2048env.coverage" NAME="2048env Coverage Results" MODIFIED="1639528539829" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/2048_RL_env$2048model.coverage" NAME="model Coverage Results" MODIFIED="1641337283214" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/2048_RL_env$keras_rl_test.coverage" NAME="keras-rl-test Coverage Results" MODIFIED="1641523389270" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/2048_RL_env$keras_rl_test.coverage" NAME="keras-rl-test Coverage Results" MODIFIED="1641729283058" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

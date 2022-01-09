@@ -23,10 +23,13 @@ class BestValidMovePolicy(Policy):
         """
         assert q_values.ndim == 1
         nb_actions = q_values.shape[0]
-
-        if np.random.uniform() < self.eps:
-            action = np.random.randint(0, nb_actions)
-        else:
+        original_q = np.copy(q_values)
+        for _ in range(nb_actions):
             action = np.argmax(q_values)
-        return action
-
+            if self.env.play.check_valid_move(action):
+                return action
+            else:
+                q_values[action] = -10000
+        # print("CGO:", self.env.play.check_game_over())
+        print(Exception, "All moves invalid")
+        print(original_q, "->", q_values)

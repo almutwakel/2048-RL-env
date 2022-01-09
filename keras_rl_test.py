@@ -6,11 +6,10 @@ from tensorflow.keras.layers import Dense, Activation, Flatten, Conv2D, Permute
 from tensorflow.keras.optimizers import Adam
 
 from rl.agents.dqn import DQNAgent
-from rl.policy import BoltzmannQPolicy, SoftmaxPolicy
 from rl.memory import SequentialMemory
+from rl.policy import EpsGreedyQPolicy
 
 from policy import BestValidMovePolicy
-
 import env as e
 
 
@@ -31,10 +30,10 @@ print(model.summary())
 print("#osh", model.output.shape)
 
 memory = SequentialMemory(limit=50000, window_length=1)
-# policy = BoltzmannQPolicy(tau=0.2)
-policy = BestValidMovePolicy(e)
+train_policy = EpsGreedyQPolicy(eps=0.1)
+test_policy = BestValidMovePolicy(env)
 dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=100,
-               target_model_update=1e-2, policy=policy, test_policy=policy)
+               target_model_update=1e-2, policy=train_policy, test_policy=test_policy)
 dqn.compile(Adam(learning_rate=1e-3), metrics=['mae'])
 
 
@@ -46,5 +45,5 @@ dqn.compile(Adam(learning_rate=1e-3), metrics=['mae'])
 
 # Finally, evaluate our algorithm for 5 episodes.
 print("test")
-dqn.test(env, nb_episodes=1, visualize=True)
+dqn.test(env, nb_episodes=5, visualize=True)
 print("test over")
