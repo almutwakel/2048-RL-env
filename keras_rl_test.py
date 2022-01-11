@@ -30,17 +30,17 @@ print(model.summary())
 print("#osh", model.output.shape)
 
 memory = SequentialMemory(limit=50000, window_length=1)
-train_policy = EpsGreedyQPolicy(eps=0.1)
+train_policy = EpsGreedyQPolicy(eps=1)
 test_policy = BestValidMovePolicy(env)
 dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=100,
                target_model_update=1e-2, policy=train_policy, test_policy=test_policy)
 dqn.compile(Adam(learning_rate=1e-3), metrics=['mae'])
 
 
-# dqn.fit(env, nb_steps=10000, visualize=True, verbose=1)
+dqn.fit(env, nb_steps=10000, visualize=True, verbose=1)
 
 # After training is done, we save the final weights.
-# dqn.save_weights(f'savedata/dqn_2048_weights.h5f', overwrite=True)
+dqn.save_weights(f'savedata/dqcnn_2048.h5f', overwrite=True)
 # dqn.load_weights(f'savedata/dqn_2048_weights.h5f')
 
 # Finally, evaluate our algorithm for 5 episodes.

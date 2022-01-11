@@ -249,14 +249,12 @@ class Game:
                             over = False
                 if self.grid[row][col] == 11:
                     self.done = True
-                    print("2048! Game over")
-                    print("Final score:", self.score)
+                    print("2048! Game over | Final score:", self.score)
                     return
 
         if over:
             self.done = True
-            print("Game over")
-            print("Final score:", self.score)
+            print("Game over | Final score:", self.score)
 
     def start(self):
         self.grid = []
@@ -268,7 +266,7 @@ class Game:
         self.add_new_tile()
 
     def act(self):
-        print("acted", self.action)
+        # print("acted", self.action)
         if self.action == 0:
             new_grid, changed, score_delta = self.move_up(self.grid)
         elif self.action == 1:
@@ -278,7 +276,7 @@ class Game:
         elif self.action == 3:
             new_grid, changed, score_delta = self.move_right(self.grid)
         else:
-            print(Exception, "Invalid action")
+            print("Invalid action")
             return
 
         self.grid = new_grid

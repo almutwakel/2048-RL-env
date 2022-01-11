@@ -31,5 +31,5 @@ class BestValidMovePolicy(Policy):
             else:
                 q_values[action] = -10000
         # print("CGO:", self.env.play.check_game_over())
-        print(Exception, "All moves invalid")
+        print("All moves invalid")
         print(original_q, "->", q_values)

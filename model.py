@@ -80,35 +80,24 @@ def play_one_round(render=True, verbose=False):
     state = env.reset()
     done = False
     while not done:
-        timestamp1 = datetime.datetime.now()
         if np.random.rand() < epsilon:
             actions = take_random_action()
         else:
             actions = model.predict([state])
-        changed = False
-        while not changed:
-            action = np.argmax(actions)
-            timestamp2 = datetime.datetime.now()
-            next_state, reward, done, flags = env.step(action)
-            timestamp3 = datetime.datetime.now()
-            changed = flags["changed"]
-            actions[0][action] = -1
-            if render:
-                env.render()
-            state = next_state
-            if done:
-                break
+        action = np.argmax(actions[0])
+        # print("action:", action)
+        while not env.play.check_valid_move(action):
+            actions[0][action] = -10000
+            action = np.argmax(actions[0])
+        next_state, reward, done, flags = env.step(action)
+        if render:
+            env.render()
+        if done:
+            break
         # print(next_state, reward, done, _)
-        timestamp4 = datetime.datetime.now()
-        print(action)
+        # print(action)
         remember_experience([state], action, reward, next_state, done)
         state = next_state
-        timestamp5 = datetime.datetime.now()
-        if verbose:
-            print("Action time:", timestamp2 - timestamp1)
-            print("Step time:", timestamp3 - timestamp2)
-            print("Render time:", timestamp4 - timestamp3)
-            print("Remember time:", timestamp5 - timestamp4)
 
 
 
@@ -143,21 +132,18 @@ def test_model(num_rounds=100, render=False):
         done = False
         while not done:
             actions = model.predict([state])
-            changed = False
-            while not changed:
-                action = np.argmax(actions)
-                next_state, reward, done, flags = env.step(action)
-                # print(action, actions)
-                changed = flags["changed"]
-                if changed:
-                    print(action, actions)
-                actions[0][action] = -1
-                total_reward += reward
-                if render:
-                    env.render()
-                state = next_state
-                if done:
-                    break
+            action = np.argmax(actions[0])
+            # print("action:", action)
+            while not env.play.check_valid_move(action):
+                actions[0][action] = -10000
+                action = np.argmax(actions[0])
+            next_state, reward, done, flags = env.step(action)
+            total_reward += reward
+            if render:
+                env.render()
+            state = next_state
+            if done:
+                break
     timestamp2 = datetime.datetime.now()
     print('Average reward per round = {}'.format(total_reward / num_rounds))
     print("Testing time: ", timestamp2-timestamp1)
@@ -166,8 +152,10 @@ def test_model(num_rounds=100, render=False):
 10. Create a function to train and test the model
 """
 def train_and_test_model(train_rounds=10000, test_rounds=1000, batch_size=32, gamma=0.9, render=False):
+    print("Training", train_rounds, "rounds:")
     play_many_rounds(train_rounds, batch_size, gamma, epsilon, render=render)
-    test_model(test_rounds)
+    print("Testing", test_rounds, "rounds:")
+    test_model(test_rounds, render=render)
 
 """
 11. Train and test the model
